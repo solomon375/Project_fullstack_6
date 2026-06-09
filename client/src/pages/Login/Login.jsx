@@ -17,9 +17,7 @@ export default function Login() {
     setError('');
     setSubmitting(true);
     try {
-      // פניה לשרת האמיתי שלנו
       const response = await loginUser(email, password);
-      // השרת מחזיר { message: "...", user: { id, name, email } }
       login(response.user);
       navigate('/home');
     } catch (err) {

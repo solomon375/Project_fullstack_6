@@ -1,7 +1,5 @@
 const API_URL = "http://localhost:3000/api";
 
-// --- פונקציות התחברות והרשמה חדשות מול השרת שלנו ---
-
 export async function loginUser(email, password) {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
@@ -12,7 +10,7 @@ export async function loginUser(email, password) {
     const err = await res.json();
     throw new Error(err.error || "Login failed");
   }
-  return res.json(); // השרת שלנו מחזיר אובייקט עם message ו-user
+  return res.json(); 
 }
 
 export async function registerUser(userData) {
@@ -28,8 +26,6 @@ export async function registerUser(userData) {
   return res.json();
 }
 
-// --- שאר הפונקציות נשארות, השרת שלך יצטרך לתמוך בנתיבים האלו ---
-
 export async function getUsers() {
   const res = await fetch(`${API_URL}/users`);
   if (!res.ok) throw new Error("Failed to fetch users");
@@ -44,7 +40,7 @@ export async function getUserTodos(userId) {
 
 export async function updateTodo(todoId, patch) {
   const res = await fetch(`${API_URL}/todos/${todoId}`, {
-    method: "PATCH",
+    method: "PUT", 
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(patch),
   });
@@ -102,7 +98,7 @@ export async function deletePost(postId) {
 
 export async function updatePost(postId, patch) {
   const res = await fetch(`${API_URL}/posts/${postId}`, {
-    method: "PATCH",
+    method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(patch),
   });
@@ -130,7 +126,7 @@ export async function deleteComment(commentId) {
 
 export async function updateComment(commentId, patch) {
   const res = await fetch(`${API_URL}/comments/${commentId}`, {
-    method: "PATCH",
+    method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(patch),
   });
@@ -177,7 +173,7 @@ export async function addPhoto(photoData) {
 
 export async function updatePhoto(photoId, data) {
   const res = await fetch(`${API_URL}/photos/${photoId}`, {
-    method: "PATCH",
+    method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });

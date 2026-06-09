@@ -27,14 +27,12 @@ export default function Register() {
 
     setSubmitting(true);
     try {
-      // שליחת המידע לשרת שלנו שניצור בו יוזר
       const response = await registerUser({
         name: credentials.name,
         email: credentials.email,
         password: credentials.password
       });
       
-      // התחברות אוטומטית מיד אחרי הרשמה מוצלחת
       login(response.user);
       navigate("/home");
     } catch (err) {
