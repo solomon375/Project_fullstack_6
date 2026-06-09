@@ -1,27 +1,38 @@
-const API_URL = "http://localhost:3000";
+const API_URL = "http://localhost:3000/api";
+
+// --- פונקציות התחברות והרשמה חדשות מול השרת שלנו ---
+
+export async function loginUser(email, password) {
+  const res = await fetch(`${API_URL}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Login failed");
+  }
+  return res.json(); // השרת שלנו מחזיר אובייקט עם message ו-user
+}
+
+export async function registerUser(userData) {
+  const res = await fetch(`${API_URL}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(userData),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to create user");
+  }
+  return res.json();
+}
+
+// --- שאר הפונקציות נשארות, השרת שלך יצטרך לתמוך בנתיבים האלו ---
 
 export async function getUsers() {
   const res = await fetch(`${API_URL}/users`);
   if (!res.ok) throw new Error("Failed to fetch users");
-  return res.json();
-}
-
-export async function getUserByUsername(username) {
-  const res = await fetch(
-    `${API_URL}/users?username=${encodeURIComponent(username)}`,
-  );
-  if (!res.ok) throw new Error("Failed to fetch user");
-  const users = await res.json();
-  return users[0] || null;
-}
-
-export async function createUser(user) {
-  const res = await fetch(`${API_URL}/users`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(user),
-  });
-  if (!res.ok) throw new Error("Failed to create user");
   return res.json();
 }
 

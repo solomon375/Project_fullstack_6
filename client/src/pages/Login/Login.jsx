@@ -1,13 +1,13 @@
 import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getUserByUsername } from '../../api.js';
+import { loginUser } from '../../api.js';
 import { UserContext } from '../../contexts/UserContext.jsx';
 import '../auth.css';
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useContext(UserContext);
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -17,15 +17,13 @@ export default function Login() {
     setError('');
     setSubmitting(true);
     try {
-      const user = await getUserByUsername(username);
-      if (!user || user.website !== password) {
-        setError('Invalid username or password');
-        return;
-      }
-      login(user);
+      // פניה לשרת האמיתי שלנו
+      const response = await loginUser(email, password);
+      // השרת מחזיר { message: "...", user: { id, name, email } }
+      login(response.user);
       navigate('/home');
-    } catch {
-      setError('Login failed. Is the server running?');
+    } catch (err) {
+      setError(err.message || 'Login failed. Is the server running?');
     } finally {
       setSubmitting(false);
     }
@@ -38,15 +36,15 @@ export default function Login() {
         <p className="auth-card__subtitle">Sign in to continue to your account.</p>
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="auth-form__field">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="email">Email</label>
             <input
-              id="username"
+              id="email"
               className="auth-form__input"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
-              autoComplete="username"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              autoComplete="email"
               required
             />
           </div>
