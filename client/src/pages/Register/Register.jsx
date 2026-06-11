@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../../api.js";
 import { UserContext } from "../../contexts/UserContext.jsx";
@@ -6,7 +6,9 @@ import "../auth.css";
 
 export default function Register() {
   const navigate = useNavigate();
-  const { login } = useContext(UserContext);
+  // חילצנו את currentUser כדי לבדוק אם המשתמש כבר מחובר
+  const { login, currentUser } = useContext(UserContext);
+  
   const [credentials, setCredentials] = useState({
     name: "",
     email: "",
@@ -15,6 +17,13 @@ export default function Register() {
   });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  // הגנה: אם המשתמש כבר מחובר, שלח אותו למסך הבית
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/home', { replace: true });
+    }
+  }, [currentUser, navigate]);
 
   async function handleSubmit(e) {
     e.preventDefault();

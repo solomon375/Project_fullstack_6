@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useParams } from "react-router-dom";
+import { UserContext } from "../../contexts/UserContext.jsx";
 import {
   createAlbum,
   getAlbumPhotos,
@@ -14,8 +15,14 @@ import AlbumList from "./components/AlbumList.jsx";
 import "./albums.css";
 
 export default function Albums() {
-  const { userId } = useParams();
-  const { albums, setAlbums, loading, error, setError } = useAlbums(userId);
+  // אנחנו לוקחים את ה-username משורת הכתובת (אפילו אם לא נשתמש בו)
+  const { username } = useParams();
+  
+  // שולפים את המשתמש האמיתי והמחובר מהקונטקסט
+  const { currentUser } = useContext(UserContext);
+
+  // שולחים ל-Hook שלך את המספר המזהה האמיתי (currentUser.id)
+  const { albums, setAlbums, loading, error, setError } = useAlbums(currentUser.id);
 
   const [openId, setOpenId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -68,7 +75,8 @@ export default function Albums() {
 
   async function handleAddAlbum(title) {
     try {
-      const newAlbum = await createAlbum(title, userId);
+      // שולחים לשרת את ה-ID האמיתי של המשתמש בעת יצירת אלבום
+      const newAlbum = await createAlbum(title, currentUser.id);
       setAlbums((prev) => [...prev, newAlbum]);
       alert("Album created successfully!");
     } catch (err) {
@@ -133,7 +141,8 @@ export default function Albums() {
 
   return (
     <div className="albums-page">
-      <h1>Albums</h1>
+      {/* הוספתי כאן את שם המשתמש בכותרת כדי שיהיה יפה ומותאם לשאר העמודים */}
+      <h1>Albums - {currentUser?.name || currentUser?.username}</h1>
       {loading && <p className="albums-empty">Loading...</p>}
       {error && <p className="error">{error}</p>}
       <AlbumSearch value={searchQuery} onChange={setSearchQuery} />

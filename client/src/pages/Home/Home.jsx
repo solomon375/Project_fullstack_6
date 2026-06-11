@@ -45,6 +45,7 @@ export default function Home() {
     navigate("/login");
   }
 
+  // מחלצים את השם של המשתמש (או שם המשתמש) כדי לשים בשורת הכתובת
   const displayName = currentUser.name || currentUser.username;
 
   return (
@@ -55,6 +56,27 @@ export default function Home() {
           <p>What would you like to do today?</p>
         </div>
         <div className="home-header__actions">
+          {/* 👇 כפתור מנהל - מופיע רק אם המשתמש הוא אדמין 👇 */}
+          {currentUser.is_admin === 1 && (
+            <button
+              type="button"
+              className="home-action"
+              style={{ backgroundColor: "purple", color: "white", borderColor: "purple" }}
+              onClick={() => navigate("/admin")}
+            >
+              Admin Panel
+            </button>
+          )}
+
+          {/* 👇 כפתור הגדרות חדש 👇 */}
+          <button
+            type="button"
+            className="home-action"
+            onClick={() => navigate("/settings")}
+          >
+            Settings
+          </button>
+
           <button
             type="button"
             className="home-action"
@@ -78,7 +100,8 @@ export default function Home() {
             key={card.key}
             type="button"
             className="home-card"
-            onClick={() => navigate(`/users/${currentUser.id}/${card.key}`)}
+            /* השינוי החשוב! החלפנו את ה-id ב-displayName */
+            onClick={() => navigate(`/users/${displayName}/${card.key}`)}
           >
             <span className="home-card__icon" aria-hidden="true">
               {card.badge}

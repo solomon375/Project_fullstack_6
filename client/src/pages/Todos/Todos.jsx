@@ -8,8 +8,10 @@ import TodoList from './components/TodoList';
 import '../Albums/albums.css';
 
 export default function Todos() {
-  const { userId } = useParams();
+  // אנחנו כבר לא לוקחים את ה-ID משורת הכתובת, כי יש שם עכשיו שם (כמו "Test User")
+  const { username } = useParams(); 
   const { currentUser } = useContext(UserContext);
+  
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -23,7 +25,8 @@ export default function Todos() {
     async function load() {
       setLoading(true);
       try {
-        const data = await getUserTodos(userId);
+        // משתמשים ב-ID האמיתי של המשתמש מהקונטקסט!
+        const data = await getUserTodos(currentUser.id);
         if (!cancelled) setTodos(data);
       } catch {
         if (!cancelled) setError('Failed to load todos');
@@ -33,11 +36,12 @@ export default function Todos() {
     }
     load();
     return () => { cancelled = true; };
-  }, [userId]);
+  }, [currentUser.id]); // מתעדכן לפי ה-ID של המשתמש
 
   const handleAdd = async (title) => {
     try {
-      const created = await createTodo({ userId: Number(userId), title, completed: false });
+      // שים לב: השרת מצפה ל- user_id (עם קו תחתון)
+      const created = await createTodo({ user_id: currentUser.id, title, completed: false });
       setTodos(prev => [...prev, created]);
       setShowAddForm(false);
     } catch { setError('Failed to add todo'); }

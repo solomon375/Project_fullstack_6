@@ -29,11 +29,16 @@ export default function PhotoItem({ photo, onDelete, onSave }) {
         ×
       </button>
 
-      <img
-        src={photo.thumbnailUrl}
-        alt={photo.title}
-        className="photo-item__img"
-      />
+      {/* 👇 כאן נמצא הקסם! עטפנו את התמונה בקישור שפותח אותה בלשונית חדשה 👇 */}
+      <a href={photo.url || photo.thumbnailUrl} target="_blank" rel="noopener noreferrer">
+        <img
+          src={photo.thumbnailUrl || photo.url}
+          alt={photo.title}
+          className="photo-item__img"
+          style={{ cursor: "pointer" }}
+          title="Click to view full size"
+        />
+      </a>
 
       <figcaption className="photo-item__caption">
         {isEditing ? (

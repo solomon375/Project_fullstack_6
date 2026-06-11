@@ -214,3 +214,31 @@ export async function getLatestAlbum(userId) {
   const data = await res.json();
   return data[0] || null;
 }
+
+// --- פונקציות הגדרות ומנהל ---
+
+export async function updateUser(userId, data) {
+  const res = await fetch(`${API_URL}/users/${userId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update user details");
+  return res.json();
+}
+
+export async function getAllUsers() {
+  const res = await fetch(`${API_URL}/users`);
+  if (!res.ok) throw new Error("Failed to fetch users");
+  return res.json();
+}
+
+export async function toggleBlockUser(userId, is_deleted) {
+  const res = await fetch(`${API_URL}/users/${userId}/block`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ is_deleted }),
+  });
+  if (!res.ok) throw new Error("Failed to toggle block status");
+  return res.json();
+}

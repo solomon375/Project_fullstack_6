@@ -11,7 +11,8 @@ import PostList from './components/PostList';
 import '../Albums/albums.css';
 
 export default function Posts() {
-  const { userId } = useParams();
+  // לוקחים את ה-username מהכתובת (למרות שאנחנו מסתמכים על הקונטקסט לנתונים)
+  const { username } = useParams();
   const { currentUser } = useContext(UserContext);
 
   const [posts, setPosts] = useState([]);
@@ -36,7 +37,8 @@ export default function Posts() {
       setLoading(true);
       setError('');
       try {
-        const data = await getUserPosts(userId);
+        // שולפים את הפוסטים לפי ה-ID האמיתי של המשתמש!
+        const data = await getUserPosts(currentUser.id);
         if (!cancelled) setPosts(data);
       } catch {
         if (!cancelled) setError('Failed to load posts');
@@ -46,11 +48,12 @@ export default function Posts() {
     }
     load();
     return () => { cancelled = true; };
-  }, [userId]);
+  }, [currentUser.id]); // מעדכנים את התלות
 
   const handleAddPost = async (postData) => {
     const newPost = {
-      userId: Number(userId),
+      user_id: currentUser.id, // השרת שלנו מצפה ל- user_id עם קו תחתון
+      userId: currentUser.id,  // נשאיר גם את זה ליתר ביטחון אם api.js משתמש בו
       title: postData.title,
       body: postData.body
     };
@@ -71,7 +74,7 @@ export default function Posts() {
       await deletePost(id);
     } catch {
       setError('Failed to delete post');
-      const data = await getUserPosts(userId);
+      const data = await getUserPosts(currentUser.id);
       setPosts(data);
     }
   };
@@ -99,10 +102,10 @@ export default function Posts() {
     setPosts(prev => prev.map(p => p.id === id ? { ...p, title: editPostTitle, body: editPostBody } : p));
     setEditingPostId(null);
     try {
-      await updatePost(id, { title: editPostTitle, body: editPostBody });
+      await updatePost(id, { title: editPostTitle, body: editPostBody, userId: currentUser.id });
     } catch {
       setError('Failed to update post');
-      const data = await getUserPosts(userId);
+      const data = await getUserPosts(currentUser.id);
       setPosts(data);
     }
   };
@@ -154,7 +157,8 @@ export default function Posts() {
       [postId]: prev[postId].filter(c => c.id !== commentId)
     }));
     try {
-      await deleteComment(commentId);
+      // ייתכן והשרת צריך את המייל כדי לבדוק בעלות (לפי קונטרולר התגובות שבנינו)
+      await deleteComment(commentId, { email: currentUser.email });
     } catch {
       setError('Failed to delete comment');
       const data = await getPostComments(postId);
@@ -168,7 +172,7 @@ export default function Posts() {
       [postId]: prev[postId].map(c => c.id === commentId ? { ...c, body: body } : c)
     }));
     try {
-      await updateComment(commentId, { body: body });
+      await updateComment(commentId, { body: body, email: currentUser.email });
     } catch {
       setError('Failed to update comment');
       const data = await getPostComments(postId);

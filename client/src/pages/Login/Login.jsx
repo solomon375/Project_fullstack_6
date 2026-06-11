@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../../api.js';
 import { UserContext } from '../../contexts/UserContext.jsx';
@@ -6,11 +6,20 @@ import '../auth.css';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useContext(UserContext);
+  // חילצנו גם את currentUser כדי לדעת אם מישהו כבר מחובר
+  const { login, currentUser } = useContext(UserContext); 
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  // הוספנו את ההגנה כאן: אם המשתמש כבר קיים בזיכרון, תעיף אותו למסך הבית
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/home', { replace: true });
+    }
+  }, [currentUser, navigate]);
 
   async function handleSubmit(e) {
     e.preventDefault();
