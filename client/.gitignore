@@ -1,0 +1,11 @@
+# תשכח מתיקיות החבילות הכבדות!
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# תשכח מקבצי סביבה וסיסמאות
+.env
+
+# קבצי מערכת של ווינדוס ומאק
+.DS_Store
+Thumbs.db
